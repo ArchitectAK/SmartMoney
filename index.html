@@ -1,0 +1,106 @@
+<html>
+<style>
+    .div1 {
+        width: 55px;
+        height: 20px;
+    }
+</style>
+
+<body>
+    <h1 style="background-color:powderblue"> Sample dApp</h1>
+    <h2 style="text-align:center"> Deposit money and withdraw double of it.</h2>
+
+    <label for="money">Input amount you wanna deposit</label>
+    <br>
+    <input type="text" id="money">
+    <br>
+    <br>
+    <div class="div1">
+        <button onclick="Deposit()">Deposit</button>
+        <div class="div1">
+            <br>
+            <br>
+        </div>
+        <button onclick="Withdraw()">Withdraw</button>
+    </div>
+
+    <script charset="utf-8" src="https://cdn.ether.io/scripts/ethers-v4-min.js" type="text/javascript">
+
+    </script>
+    <script>
+        // SPDX-License-Identifier: GPL-3.0
+        
+        pragma solidity >= 0.7.0 < 0.9.0;
+
+        contract Money {
+            uint money;
+
+            function Depositi(uint _money) public {
+                money = _money;
+            }
+
+            function Withdraw() public view returns(uint) {
+                return money * 2;
+            }
+        }
+    </script>
+    <script>
+        window.ethereum.enable();
+        var provider = new ethers.provider.Web3Provider(web3.currentProvider, 'ropsten');
+        var MoneyContractAddress = 0x1bA6191F66d6E01Fa68e6Cdd4c32229Bc20C1f20;
+        var MoneyContractABI =
+            [
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_money",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Deposit",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "Withdraw",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+            
+            
+            var MoneyContract
+            var signer
+
+            provider.listAccounts().then(function (accounts){
+                signer = provider.getSigner(accounts[0]);
+                MoneyContract = new ethers.Contract(MoneyContractAddress, MoneyContractABI, signer);
+            })
+
+            async function Withdraw(){
+                WithdrawPromise = MoneyContract.Withdraw();
+                var Money = await WithdrawPromise;
+                console.log(Money.toNumber());
+                console.log('Congratulations, you earned double');
+            }
+
+            async function Deposit(){
+                let  Money = document.getElementById("money").value;
+                console.log(Money);
+                DepositPromise = MoneyContract.Deposit(Money);
+                await DepositPromise;
+            }
+    </script>
+</body>
+
+</html>
